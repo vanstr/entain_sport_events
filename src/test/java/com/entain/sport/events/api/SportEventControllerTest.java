@@ -1,7 +1,7 @@
 package com.entain.sport.events.api;
 
-import com.entain.sport.events.dto.SportEventDto;
-import com.entain.sport.events.model.EventStatus;
+import com.entain.sport.events.model.SportEvent;
+import com.entain.sport.events.model.SportEventCreationRequest;
 import com.entain.sport.events.model.SportType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,15 +34,14 @@ class SportEventControllerTest {
 
     @Test
     public void testSportEventHappyPath() throws Exception {
-        SportEventDto dto = new SportEventDto();
-        dto.setName("Football Match");
-        dto.setSport(SportType.FOOTBALL);
-        dto.setStatus(EventStatus.INACTIVE);
-        dto.setStartTime(ZonedDateTime.now().plusDays(1));
+        SportEventCreationRequest request = new SportEventCreationRequest();
+        request.setName("Football Match");
+        request.setSport(SportType.FOOTBALL);
+        request.setStartTime(ZonedDateTime.now().plusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(dto)))
+                        .content(asJsonString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Football Match"))
                 .andExpect(jsonPath("$.sport").value("FOOTBALL"))
@@ -50,7 +49,7 @@ class SportEventControllerTest {
                 .andExpect(jsonPath("$.startTime").isNotEmpty())
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andReturn();
-        Long id = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEventDto.class).getId();
+        Long id = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEvent.class).getId();
 
         mockMvc.perform(get("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -153,36 +152,36 @@ class SportEventControllerTest {
     }
 
     private Long createSportEvent(SportType sportType) throws Exception {
-        SportEventDto dto = new SportEventDto();
-        dto.setName(sportType + " Match");
-        dto.setSport(sportType);
-        dto.setStartTime(ZonedDateTime.now().plusDays(1));
+        SportEventCreationRequest request = new SportEventCreationRequest();
+        request.setName(sportType + " Match");
+        request.setSport(sportType);
+        request.setStartTime(ZonedDateTime.now().plusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(dto)))
+                        .content(asJsonString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
-        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEventDto.class).getId();
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEvent.class).getId();
 
     }
 
     private Long createSportEventInThePast() throws Exception {
-        SportEventDto dto = new SportEventDto();
-        dto.setName("Past Match");
-        dto.setSport(SportType.FOOTBALL);
-        dto.setStartTime(ZonedDateTime.now().minusDays(1));
+        SportEventCreationRequest request = new SportEventCreationRequest();
+        request.setName("Past Match");
+        request.setSport(SportType.FOOTBALL);
+        request.setStartTime(ZonedDateTime.now().minusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(dto)))
+                        .content(asJsonString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
-        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEventDto.class).getId();
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEvent.class).getId();
     }
 
-    private String asJsonString(SportEventDto dto) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(dto);
+    private String asJsonString(SportEventCreationRequest request) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(request);
     }
 
 }

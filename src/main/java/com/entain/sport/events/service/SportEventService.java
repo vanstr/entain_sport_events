@@ -1,7 +1,8 @@
 package com.entain.sport.events.service;
 
 import com.entain.sport.events.SportEventNotFoundException;
-import com.entain.sport.events.dto.SportEventDto;
+import com.entain.sport.events.model.SportEventCreationRequest;
+import com.entain.sport.events.model.SportEvent;
 import com.entain.sport.events.model.EventStatus;
 import com.entain.sport.events.model.SportType;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,10 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class SportEventService {
 
-    private final List<SportEventDto> events = new CopyOnWriteArrayList<>();
+    private final List<SportEvent> events = new CopyOnWriteArrayList<>();
     private final AtomicLong id = new AtomicLong(0);
 
-    public List<SportEventDto> getSportEvents(EventStatus status, SportType sport) {
+    public List<SportEvent> getSportEvents(EventStatus status, SportType sport) {
         return events.stream().filter(event -> {
             if (status != null && !Objects.equals(event.getStatus(), status)) {
                 return false;
@@ -30,21 +31,25 @@ public class SportEventService {
         }).toList();
     }
 
-    public SportEventDto createSportEvent(SportEventDto dto) {
-        dto.setId(id.incrementAndGet());
-        dto.setStatus(EventStatus.INACTIVE);
-        events.add(dto);
-        return dto;
+    public SportEvent createSportEvent(SportEventCreationRequest creationRequest) {
+        SportEvent sportEvent = new SportEvent();
+        sportEvent.setId(id.incrementAndGet());
+        sportEvent.setStatus(EventStatus.INACTIVE);
+        sportEvent.setStartTime(creationRequest.getStartTime());
+        sportEvent.setSport(creationRequest.getSport());
+        sportEvent.setName(creationRequest.getName());
+        events.add(sportEvent);
+        return sportEvent;
     }
 
-    public SportEventDto getById(Long id) {
+    public SportEvent getById(Long id) {
         return events.stream()
                 .filter(event -> Objects.equals(event.getId(), id))
                 .findFirst().orElseThrow(() -> new SportEventNotFoundException("Sport event not found: " + id));
     }
 
-    public SportEventDto changeStatus(Long id, EventStatus newStatus) {
-        SportEventDto sportEvent = getById(id);
+    public SportEvent changeStatus(Long id, EventStatus newStatus) {
+        SportEvent sportEvent = getById(id);
         EventStatus currentStatus = sportEvent.getStatus();
 
         if (currentStatus == EventStatus.INACTIVE && newStatus == EventStatus.ACTIVE) {

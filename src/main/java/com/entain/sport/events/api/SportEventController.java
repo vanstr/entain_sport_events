@@ -1,6 +1,7 @@
 package com.entain.sport.events.api;
 
-import com.entain.sport.events.dto.SportEventDto;
+import com.entain.sport.events.model.SportEventCreationRequest;
+import com.entain.sport.events.model.SportEvent;
 import com.entain.sport.events.model.EventStatus;
 import com.entain.sport.events.model.SportType;
 import com.entain.sport.events.service.SportEventService;
@@ -17,23 +18,23 @@ public class SportEventController {
     private final SportEventService service;
 
     @GetMapping
-    public List<SportEventDto> getSportEvents(@RequestParam(required = false) EventStatus status,
-                                              @RequestParam(required = false) SportType sport) {
+    public List<SportEvent> getSportEvents(@RequestParam(required = false) EventStatus status,
+                                           @RequestParam(required = false) SportType sport) {
         return service.getSportEvents(status, sport);
     }
 
     @PostMapping
-    public SportEventDto createSportEvent(@RequestBody SportEventDto dto) {
-       return service.createSportEvent(dto);
+    public SportEvent createSportEvent(@RequestBody SportEventCreationRequest creationRequest) {
+       return service.createSportEvent(creationRequest);
     }
 
     @GetMapping("/{id}")
-    public SportEventDto getSportEventById(@PathVariable Long id) {
+    public SportEvent getSportEventById(@PathVariable Long id) {
         return service.getById(id);
     }
 
     @PatchMapping("/{id}/status")
-    public SportEventDto changeSportEventStatus(@PathVariable Long id, @RequestParam EventStatus status) {
+    public SportEvent changeSportEventStatus(@PathVariable Long id, @RequestParam EventStatus status) {
         return service.changeStatus(id, status);
     }
 }
