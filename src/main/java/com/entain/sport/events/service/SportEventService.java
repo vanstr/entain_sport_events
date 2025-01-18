@@ -1,5 +1,6 @@
 package com.entain.sport.events.service;
 
+import com.entain.sport.events.SportEventNotFoundException;
 import com.entain.sport.events.dto.SportEventDto;
 import com.entain.sport.events.model.EventStatus;
 import com.entain.sport.events.model.SportType;
@@ -36,10 +37,9 @@ public class SportEventService {
     }
 
     public SportEventDto getById(Long id) {
-        // TODO provide correct status code
         return events.stream()
                 .filter(event -> Objects.equals(event.getId(), id))
-                .findFirst().orElse(null);
+                .findFirst().orElseThrow(() -> new SportEventNotFoundException("Sport event not found: " + id));
     }
 
     public SportEventDto changeStatus(Long id, EventStatus newStatus) {
@@ -47,7 +47,7 @@ public class SportEventService {
         switch (sportEvent.getStatus()) {
             case INACTIVE:
                 if (newStatus == EventStatus.ACTIVE) {
-                    if(sportEvent.getStartTime().isBefore(LocalDateTime.now())){
+                    if (sportEvent.getStartTime().isBefore(LocalDateTime.now())) {
                         throw new IllegalStateException("Cannot activate event before the start time");
                     }
                     sportEvent.setStatus(EventStatus.ACTIVE);
