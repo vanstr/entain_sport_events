@@ -25,6 +25,7 @@ Event status change restrictions
 - Spring Boot
 - Gradle
 - JUnit 5
+- Lombok
 
 ## Getting Started
 
