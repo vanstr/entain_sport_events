@@ -12,11 +12,11 @@ API should cover the following functionality:
 - Change sport event status
    
 Event status change restrictions
-   ● Can be changed from inactive to active
-   ● Can be changed from From active to finished
-   ● Cannot activate an event if start_time is in the past
-   ● Finished could not be changed to any status
-   ● Inactive can not be changed to finished
+- Can be changed from inactive to active
+- Can be changed from From active to finished
+- Cannot activate an event if start_time is in the past
+- Finished could not be changed to any status
+- Inactive can not be changed to finished
 
 
 ## Technologies Used
