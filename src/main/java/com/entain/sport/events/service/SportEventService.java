@@ -45,30 +45,19 @@ public class SportEventService {
 
     public SportEventDto changeStatus(Long id, EventStatus newStatus) {
         SportEventDto sportEvent = getById(id);
-        switch (sportEvent.getStatus()) {
-            case INACTIVE:
-                if (newStatus == EventStatus.ACTIVE) {
-                    if (sportEvent.getStartTime().isBefore(LocalDateTime.now())) {
-                        throw new IllegalStateException("Cannot activate event before the start time");
-                    }
-                    sportEvent.setStatus(EventStatus.ACTIVE);
-                } else {
-                    throw new IllegalArgumentException("Cannot change status from INACTIVE to " + newStatus);
-                }
-                break;
-            case ACTIVE:
-                if (newStatus == EventStatus.FINISHED) {
-                    sportEvent.setStatus(EventStatus.FINISHED);
-                } else {
-                    // TODO should be clarified
-                    throw new IllegalArgumentException("Cannot change status from ACTIVE to " + newStatus);
-                }
-                break;
-            case FINISHED:
-                throw new IllegalArgumentException("Cannot change status of a FINISHED event");
-            default:
-                throw new IllegalArgumentException("Unknown status: " + sportEvent.getStatus());
+        EventStatus currentStatus = sportEvent.getStatus();
+
+        if (currentStatus == EventStatus.INACTIVE && newStatus == EventStatus.ACTIVE) {
+            if (sportEvent.getStartTime().isBefore(LocalDateTime.now())) {
+                throw new IllegalStateException("Cannot activate event before the start time");
+            }
+            sportEvent.setStatus(EventStatus.ACTIVE);
+        } else if (currentStatus == EventStatus.ACTIVE && newStatus == EventStatus.FINISHED) {
+            sportEvent.setStatus(EventStatus.FINISHED);
+        } else {
+            throw new IllegalArgumentException("Cannot change status from " + currentStatus + " to " + newStatus);
         }
+
         return sportEvent;
     }
 }
