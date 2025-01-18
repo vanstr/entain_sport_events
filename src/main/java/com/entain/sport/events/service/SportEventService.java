@@ -32,6 +32,7 @@ public class SportEventService {
 
     public SportEventDto createSportEvent(SportEventDto dto) {
         dto.setId(id.incrementAndGet());
+        dto.setStatus(EventStatus.INACTIVE);
         events.add(dto);
         return dto;
     }
