@@ -31,8 +31,8 @@ Event status change restrictions
 
 ### Prerequisites
 
-- Java 21 or higher
-- Gradle 8.11.1 or higher
+- Java 17 or higher
+- Gradle 8 or higher
 
 ### Installation
 
