@@ -23,4 +23,24 @@ public class SportEventController {
         dto.setId((long) events.size());
         return dto;
     }
+
+    @GetMapping("/{id}")
+    public SportEventDto getSportEventById(@PathVariable Long id) {
+        return events.stream()
+                .filter(event -> event.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @PatchMapping("/{id}/status")
+    public SportEventDto changeSportEventStatus(@PathVariable Long id, @RequestParam String status) {
+        SportEventDto event = events.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+        if (event != null) {
+            event.setStatus(status);
+        }
+        return event;
+    }
 }
