@@ -2,11 +2,11 @@ package com.entain.sport.events.api;
 
 import com.entain.sport.events.dto.SportEventDto;
 import com.entain.sport.events.model.EventStatus;
+import com.entain.sport.events.model.SportType;
 import com.entain.sport.events.service.SportEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -17,8 +17,9 @@ public class SportEventController {
     private final SportEventService service;
 
     @GetMapping
-    public List<SportEventDto> getSportEvents() {
-        return service.getAll();
+    public List<SportEventDto> getSportEvents(@RequestParam(required = false) EventStatus status,
+                                              @RequestParam(required = false) SportType sport) {
+        return service.getSportEvents(status, sport);
     }
 
     @PostMapping

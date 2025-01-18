@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class SportEventControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
@@ -61,19 +63,65 @@ class SportEventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Football Match"));
 
-        mockMvc.perform(patch("/api/v1/sport-events/" + id + "/status")
+        updateStatus(id, "ACTIVE");
+
+        updateStatus(id, "FINISHED");
+    }
+
+    @Test
+    void testGetSportEventsByStatus() throws Exception {
+        createSportEvent(SportType.FOOTBALL);
+        createSportEvent(SportType.TENNIS);
+        createSportEvent(SportType.TENNIS);
+
+        mockMvc.perform(get("/api/v1/sport-events")
+                        .param("sport", "TENNIS")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+
+    }
+
+    @Test
+    void testGetSportEventsBySportType() throws Exception {
+        Long sportEvent1 = createSportEvent(SportType.FOOTBALL);
+        updateStatus(sportEvent1, "ACTIVE");
+        Long sportEvent2 = createSportEvent(SportType.TENNIS);
+        updateStatus(sportEvent2, "ACTIVE");
+
+        createSportEvent(SportType.TENNIS);
+
+        mockMvc.perform(get("/api/v1/sport-events")
                         .param("status", "ACTIVE")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("ACTIVE"));
+                .andExpect(jsonPath("$", hasSize(2)));
 
-        mockMvc.perform(patch("/api/v1/sport-events/" + id + "/status")
-                        .param("status", "FINISHED")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("FINISHED"));
     }
 
+    private void updateStatus(Long sportEventId, String newStatus) throws Exception {
+        mockMvc.perform(patch("/api/v1/sport-events/" + sportEventId + "/status")
+                        .param("status", newStatus)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value(newStatus));
+    }
+
+    private Long createSportEvent(SportType sportType) throws Exception {
+        SportEventDto dto = new SportEventDto();
+        dto.setName(sportType + " Match");
+        dto.setSport(sportType);
+        dto.setStatus(EventStatus.INACTIVE);
+        dto.setStartTime(LocalDateTime.now().plusDays(1));
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(dto)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEventDto.class).getId();
+
+    }
 
     private String asJsonString(SportEventDto dto) throws JsonProcessingException {
         return objectMapper.writeValueAsString(dto);

@@ -2,6 +2,7 @@ package com.entain.sport.events.service;
 
 import com.entain.sport.events.dto.SportEventDto;
 import com.entain.sport.events.model.EventStatus;
+import com.entain.sport.events.model.SportType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,9 +16,16 @@ public class SportEventService {
     private final List<SportEventDto> events = new CopyOnWriteArrayList<>();
     private final AtomicLong id = new AtomicLong(0);
 
-    // TODO provide filtering posibility
-    public List<SportEventDto> getAll() {
-        return events;
+    public List<SportEventDto> getSportEvents(EventStatus status, SportType sport) {
+        return events.stream().filter(event -> {
+            if (status != null && !Objects.equals(event.getStatus(), status)) {
+                return false;
+            }
+            if (sport != null && !Objects.equals(event.getSport(), sport)) {
+                return false;
+            }
+            return true;
+        }).toList();
     }
 
     public SportEventDto createSportEvent(SportEventDto dto) {

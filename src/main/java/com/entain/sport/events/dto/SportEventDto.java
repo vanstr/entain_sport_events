@@ -14,5 +14,5 @@ public class SportEventDto {
     private String name;
     private SportType sport;
     private EventStatus status;
-    private LocalDateTime startTime;
+    private LocalDateTime startTime; // TODO use ZonedDateTime
 }
