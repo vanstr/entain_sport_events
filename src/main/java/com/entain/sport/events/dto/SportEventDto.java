@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Setter
 @Getter
@@ -17,5 +17,5 @@ public class SportEventDto {
     private SportType sport;
     private EventStatus status;
     @NonNull
-    private LocalDateTime startTime; // TODO use ZonedDateTime
+    private ZonedDateTime startTime;
 }

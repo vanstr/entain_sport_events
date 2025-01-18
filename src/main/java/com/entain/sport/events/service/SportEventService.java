@@ -6,7 +6,7 @@ import com.entain.sport.events.model.EventStatus;
 import com.entain.sport.events.model.SportType;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -48,7 +48,7 @@ public class SportEventService {
         EventStatus currentStatus = sportEvent.getStatus();
 
         if (currentStatus == EventStatus.INACTIVE && newStatus == EventStatus.ACTIVE) {
-            if (sportEvent.getStartTime().isBefore(LocalDateTime.now())) {
+            if (sportEvent.getStartTime().isBefore(ZonedDateTime.now())) {
                 throw new IllegalStateException("Cannot activate event before the start time");
             }
             sportEvent.setStatus(EventStatus.ACTIVE);

@@ -15,7 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,7 +38,7 @@ class SportEventControllerTest {
         dto.setName("Football Match");
         dto.setSport(SportType.FOOTBALL);
         dto.setStatus(EventStatus.INACTIVE);
-        dto.setStartTime(LocalDateTime.now().plusDays(1));
+        dto.setStartTime(ZonedDateTime.now().plusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,8 +156,7 @@ class SportEventControllerTest {
         SportEventDto dto = new SportEventDto();
         dto.setName(sportType + " Match");
         dto.setSport(sportType);
-        dto.setStatus(EventStatus.INACTIVE);
-        dto.setStartTime(LocalDateTime.now().plusDays(1));
+        dto.setStartTime(ZonedDateTime.now().plusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -172,8 +171,7 @@ class SportEventControllerTest {
         SportEventDto dto = new SportEventDto();
         dto.setName("Past Match");
         dto.setSport(SportType.FOOTBALL);
-        dto.setStatus(EventStatus.INACTIVE);
-        dto.setStartTime(LocalDateTime.now().minusDays(1));
+        dto.setStartTime(ZonedDateTime.now().minusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
                         .contentType(MediaType.APPLICATION_JSON)
