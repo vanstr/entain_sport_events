@@ -1,0 +1,38 @@
+package com.entain.sport.events.service;
+
+import com.entain.sport.events.dto.SportEventDto;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
+
+@Service
+public class SportEventService {
+
+    private final List<SportEventDto> events = new CopyOnWriteArrayList<>();
+    private final AtomicLong id = new AtomicLong(0);
+
+    // TODO provide filtering posibility
+    public List<SportEventDto> getAll() {
+        return events;
+    }
+
+    public SportEventDto createSportEvent(SportEventDto dto) {
+        dto.setId(id.incrementAndGet());
+        events.add(dto);
+        return dto;
+    }
+
+    public SportEventDto getById(Long id) {
+        // TODO provide correct status code
+        return events.stream().filter(event -> event.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    public SportEventDto changeStatus(Long id, String status) {
+        SportEventDto sportEventDto = getById(id);
+        sportEventDto.setStatus(status);
+        // TODO handle validation
+        return sportEventDto;
+    }
+}
