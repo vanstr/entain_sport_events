@@ -99,6 +99,51 @@ class SportEventControllerTest {
 
     }
 
+    @Test
+    void testStatusCanBeChangedFromInactiveToActiveAndAfterToFinished() throws Exception {
+        Long sportEventId = createSportEvent(SportType.FOOTBALL);
+        updateStatus(sportEventId, "ACTIVE");
+        updateStatus(sportEventId, "FINISHED");
+    }
+
+    @Test
+    void testCanNotActivatePastEvents() throws Exception {
+        Long sportEventId = createSportEventInThePast();
+
+        mockMvc.perform(patch("/api/v1/sport-events/" + sportEventId + "/status")
+                        .param("status", "ACTIVE")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+
+    @Test
+    void testCanChangeStatusForFinishedEvents() throws Exception {
+        Long sportEventId = createSportEvent(SportType.FOOTBALL);
+        updateStatus(sportEventId, "ACTIVE");
+        updateStatus(sportEventId, "FINISHED");
+
+        mockMvc.perform(patch("/api/v1/sport-events/" + sportEventId + "/status")
+                        .param("status", "ACTIVE")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(patch("/api/v1/sport-events/" + sportEventId + "/status")
+                        .param("status", "INACTIVE")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCanNotChangeStatusFromInactiveToFinished() throws Exception {
+        Long sportEventId = createSportEvent(SportType.FOOTBALL);
+
+        mockMvc.perform(patch("/api/v1/sport-events/" + sportEventId + "/status")
+                        .param("status", "FINISHED")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
     private void updateStatus(Long sportEventId, String newStatus) throws Exception {
         mockMvc.perform(patch("/api/v1/sport-events/" + sportEventId + "/status")
                         .param("status", newStatus)
@@ -121,6 +166,21 @@ class SportEventControllerTest {
                 .andReturn();
         return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEventDto.class).getId();
 
+    }
+
+    private Long createSportEventInThePast() throws Exception {
+        SportEventDto dto = new SportEventDto();
+        dto.setName("Past Match");
+        dto.setSport(SportType.FOOTBALL);
+        dto.setStatus(EventStatus.INACTIVE);
+        dto.setStartTime(LocalDateTime.now().minusDays(1));
+
+        MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(dto)))
+                .andExpect(status().isOk())
+                .andReturn();
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), SportEventDto.class).getId();
     }
 
     private String asJsonString(SportEventDto dto) throws JsonProcessingException {
