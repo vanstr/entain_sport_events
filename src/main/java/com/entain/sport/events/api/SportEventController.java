@@ -1,6 +1,7 @@
 package com.entain.sport.events.api;
 
 import com.entain.sport.events.dto.SportEventDto;
+import com.entain.sport.events.model.EventStatus;
 import com.entain.sport.events.service.SportEventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class SportEventController {
     }
 
     @PatchMapping("/{id}/status")
-    public SportEventDto changeSportEventStatus(@PathVariable Long id, @RequestParam String status) {
+    public SportEventDto changeSportEventStatus(@PathVariable Long id, @RequestParam EventStatus status) {
         return service.changeStatus(id, status);
     }
 }

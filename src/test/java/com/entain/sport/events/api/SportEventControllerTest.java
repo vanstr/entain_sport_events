@@ -1,6 +1,8 @@
 package com.entain.sport.events.api;
 
 import com.entain.sport.events.dto.SportEventDto;
+import com.entain.sport.events.model.EventStatus;
+import com.entain.sport.events.model.SportType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -32,8 +34,8 @@ class SportEventControllerTest {
     public void testSportEventHappyPath() throws Exception {
         SportEventDto dto = new SportEventDto();
         dto.setName("Football Match");
-        dto.setSport("Football");
-        dto.setStatus("INACTIVE");
+        dto.setSport(SportType.FOOTBALL);
+        dto.setStatus(EventStatus.INACTIVE);
         dto.setStartTime(LocalDateTime.now().plusDays(1));
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1/sport-events")
@@ -41,7 +43,7 @@ class SportEventControllerTest {
                         .content(asJsonString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Football Match"))
-                .andExpect(jsonPath("$.sport").value("Football"))
+                .andExpect(jsonPath("$.sport").value("FOOTBALL"))
                 .andExpect(jsonPath("$.status").value("INACTIVE"))
                 .andExpect(jsonPath("$.startTime").isNotEmpty())
                 .andExpect(jsonPath("$.id").isNotEmpty())

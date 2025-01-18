@@ -1,9 +1,11 @@
 package com.entain.sport.events.service;
 
 import com.entain.sport.events.dto.SportEventDto;
+import com.entain.sport.events.model.EventStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -26,10 +28,12 @@ public class SportEventService {
 
     public SportEventDto getById(Long id) {
         // TODO provide correct status code
-        return events.stream().filter(event -> event.getId().equals(id)).findFirst().orElse(null);
+        return events.stream()
+                .filter(event -> Objects.equals(event.getId(), id))
+                .findFirst().orElse(null);
     }
 
-    public SportEventDto changeStatus(Long id, String status) {
+    public SportEventDto changeStatus(Long id, EventStatus status) {
         SportEventDto sportEventDto = getById(id);
         sportEventDto.setStatus(status);
         // TODO handle validation
